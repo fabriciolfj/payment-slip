@@ -19,7 +19,7 @@
      - valor do pagamento acima do valor do boleto
     
 # tecnologias utilizadas
-- quarkus
+- spring webflux
 - base relacional
 - api rest
 - kafka
