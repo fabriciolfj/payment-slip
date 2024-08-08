@@ -9,6 +9,7 @@ import lombok.ToString;
 @Builder
 public class IdentifierPayment {
 
+    private TypePayment type;
     private String barcode;
     private String digitalLine;
     private String pix;

@@ -1,5 +1,6 @@
 package com.github.paymentslip.entrypoint.controller.payment;
 
+import com.github.paymentslip.usercase.CreatePayment;
 import io.smallrye.mutiny.Uni;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
@@ -8,11 +9,15 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Path("/api/v1/payment")
+@RequiredArgsConstructor
 public class PaymentSlipController {
+
+    private final CreatePayment cratePayment;
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -22,7 +27,8 @@ public class PaymentSlipController {
                 .invoke(value -> log.info("Payment request: {}", value))
                 .map(PaymentMapper::toEntity)
                 .invoke(entity -> log.info("Entity create start {}", entity.getUuid()))
-                .map(entity -> Response.ok(PaymentMapper.toResponse(entity)).build())
+                .flatMap(cratePayment::execute)
+                .map(entity -> Response.noContent().build())
                 .onFailure().recoverWithItem(value -> Response.status(Response.Status.BAD_REQUEST).entity(value).build());
     }
 }
