@@ -1,20 +1,36 @@
 package com.github.paymentslip.entrypoint.controller.payment;
 
-import com.github.paymentslip.entities.IdentifierPayment;
-import com.github.paymentslip.entities.Issuer;
-import com.github.paymentslip.entities.Payment;
-import com.github.paymentslip.entities.Recipient;
+import com.github.paymentslip.entities.*;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class PaymentMapper {
 
-    private PaymentMapper() {}
+    private PaymentMapper() {
+    }
 
     public static Payment toEntity(final PaymentRequest request) {
+        final Map<TypePayment, String> values = new HashMap<>();
+        values.put(TypePayment.PIX, request.getPix());
+        values.put(TypePayment.BARCODE, request.getBarcode());
+        values.put(TypePayment.DIGITAL_LINE, request.getDigitalLine());
+
+        var result = values.entrySet()
+                .stream()
+                .filter(e -> e.getValue() != null)
+                .collect(Collectors.toSet());
+
+        if (result.size() != 1) {
+            throw new IllegalArgumentException("more or none methods payment informed");
+        }
+
         final IdentifierPayment identifier = IdentifierPayment
                 .builder()
+                .type(result.stream().findFirst().get().getKey())
                 .pix(request.getPix())
                 .barcode(request.getBarcode())
                 .digitalLine(request.getDigitalLine())

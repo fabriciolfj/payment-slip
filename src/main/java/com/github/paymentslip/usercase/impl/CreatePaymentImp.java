@@ -3,9 +3,9 @@ package com.github.paymentslip.usercase.impl;
 import com.github.paymentslip.entities.Payment;
 import com.github.paymentslip.usercase.CreatePayment;
 import com.github.paymentslip.usercase.CreatePaymentProvider;
+import io.quarkus.hibernate.reactive.panache.Panache;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,12 +20,11 @@ public class CreatePaymentImp implements CreatePayment {
 
 
     @Override
-    @Transactional(Transactional.TxType.REQUIRED)
     public Uni<Void> execute(final Payment payment) {
         log.info("receive payment {}", payment.getUuid());
 
-        return provider.save(payment)
+        return Panache.withTransaction(() -> provider.save(payment)
                 .invoke(value -> log.info("save success payment {}", value.getUuid()))
-                .replaceWithVoid();
+                .replaceWithVoid());
     }
 }

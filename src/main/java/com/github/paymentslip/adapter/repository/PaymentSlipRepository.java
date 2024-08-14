@@ -19,7 +19,7 @@ public class PaymentSlipRepository implements PanacheRepositoryBase<PaymentData,
         return createFrom()
                 .item(payment).onItem()
                 .transform(PaymentDataMapper::toData)
-                .map(this::persist)
+                .flatMap(this::persist)
                 .replaceWith(Uni.createFrom().item(payment));
     }
 }
