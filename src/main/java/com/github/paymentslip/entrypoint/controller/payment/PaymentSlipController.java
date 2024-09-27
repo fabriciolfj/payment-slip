@@ -3,10 +3,7 @@ package com.github.paymentslip.entrypoint.controller.payment;
 import com.github.paymentslip.usercase.CreatePayment;
 import io.smallrye.mutiny.Uni;
 import jakarta.validation.Valid;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;
@@ -30,5 +27,18 @@ public class PaymentSlipController {
                 .flatMap(cratePayment::execute)
                 .map(entity -> Response.noContent().build())
                 .onFailure().recoverWithItem(value -> Response.status(Response.Status.BAD_REQUEST).entity(value).build());
+    }
+
+    @GET
+    @Path("/{uuid}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Uni<Response> getPayment(@QueryParam("uuid") final String uuid) {
+        return Uni.createFrom()
+                .item(uuid)
+                .map(value -> Response.ok(value).build())
+                .onFailure().recoverWithItem(value -> Response
+                        .status(Response.Status.BAD_REQUEST)
+                        .entity(value).build());
     }
 }
