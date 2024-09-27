@@ -17,13 +17,10 @@ import java.time.LocalDate;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PaymentRequest {
 
-    @NotBlank(message = "barcode is required")
     @JsonProperty("bar_code")
     private String barcode;
-    @NotBlank(message = "digitalLine is required")
     @JsonProperty("digital_line")
     private String digitalLine;
-    @NotBlank(message = "pix is required")
     private String pix;
     @NotNull(message = "amount is required")
     private BigDecimal amount;
